@@ -1,56 +1,64 @@
-const { listContacts } = require('./contacts');
-// const path = require('path');
-// const fs = require('fs/promises');
+const chalk = require('chalk');
+const { Command } = require('commander');
+const {
+  listContacts,
+  addContact,
+  getContactById,
+  removeContact,
+} = require('./contacts');
 
-// let data;
-// const file = async () => {
-//   try {
-//     data = await fs.readFile('data.json', 'utf8');
-//   } catch {
-//     data = '[]';
-//   }
-// };
+const program = new Command();
+program
+  .requiredOption('-a, --action <type>', 'choose action')
+  .option('-i, --id <type>', 'user id')
+  .option('-n, --name <type>', 'user name')
+  .option('-e, --email <type>', 'user email')
+  .option('-p, --phone <type>', 'user phone');
 
-// const fileOperation = async (filePath, action, data) => {
-//   switch (action) {
-//     case 'read':
-//       const text = await fs.readFile(filePath, 'utf8');
-//       console.log(text);
-//       break;
-//     case 'add':
-//       await fs.appendFile(filePath, data);
-//       break;
-//     case 'replace':
-//       await fs.writeFile(filePath, data);
-//       break;
-//     default:
-//       throw new Error('Unknown action');
-//   }
-// };
-// const filePath = 'files/files.txt';
+program.parse(process.argv);
 
-// fileOperation(filePath, 'read');
-// fileOperation(filePath, 'add', '\nМир');
-// fileOperation(filePath, 'replace', 'Hello world');
+const argv = program.opts();
 
 const invokeAction = async ({ action, id, name, email, phone }) => {
-  try {
-    switch (action) {
-      case 'getContacts':
-        const contacts = await listContacts();
+  switch (action) {
+    case 'list':
+      const contacts = await listContacts();
+      if (contacts.length > 0) {
         console.table(contacts);
-        break;
+      } else {
+        console.log(chalk.yellow('Contact list is empty'));
+      }
+      break;
 
-      default:
-        throw new Error('Unknown action');
-    }
-  } catch (error) {
-    console.error(error.message);
+    case 'get':
+      const contactById = await getContactById(id);
+      if (contactById) {
+        console.log(chalk.blue('Contact found'));
+        console.log(contactById);
+      } else {
+        console.log(chalk.yellow(`Contact with id '${id}' not found`));
+      }
+      break;
+
+    case 'add':
+      const newContact = await addContact(name, email, phone);
+      console.log(chalk.blue('New contact added'));
+      console.table(newContact);
+      break;
+
+    case 'remove':
+      const contact = await removeContact(id);
+      if (contact) {
+        console.log(chalk.yellow('Contact removed'));
+        console.log(contact);
+      } else {
+        console.log(chalk.yellow(`Contact with id '${id}' not found`));
+      }
+      break;
+
+    default:
+      console.warn(chalk.red('Unknown action type!'));
   }
 };
 
-invokeAction({ action: 'getContacts' });
-
-// index.listen(5010, function () {
-//   console.log('server is running on port 5010');
-// });
+invokeAction(argv);
