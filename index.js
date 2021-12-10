@@ -34,7 +34,7 @@ const invokeAction = async ({ action, id, name, email, phone }) => {
       const contactById = await getContactById(id);
       if (contactById) {
         console.log(chalk.blue('Contact found'));
-        console.log(contactById);
+        console.table(contactById);
       } else {
         console.log(chalk.yellow(`Contact with id '${id}' not found`));
       }
