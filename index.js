@@ -5,7 +5,7 @@ const {
   addContact,
   getContactById,
   removeContact,
-} = require('./contacts');
+} = require('./controllers/contacts');
 
 const program = new Command();
 program
@@ -61,4 +61,6 @@ const invokeAction = async ({ action, id, name, email, phone }) => {
   }
 };
 
-invokeAction(argv);
+(async () => {
+  await invokeAction(argv);
+})();
