@@ -6,8 +6,8 @@ const readContent = async () => {
     const data = await fs.readFile(contactsPath, 'utf8');
     const contacts = JSON.parse(data);
     return contacts;
-  } catch (error) {
-    error => console.log(error.message);
+  } catch {
+    data = '[]';
   }
 };
 module.exports = readContent;

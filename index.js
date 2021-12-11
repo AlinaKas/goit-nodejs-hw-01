@@ -23,7 +23,7 @@ const invokeAction = async ({ action, id, name, email, phone }) => {
   switch (action) {
     case 'list':
       const contacts = await listContacts();
-      if (contacts.length > 0) {
+      if (contacts) {
         console.table(contacts);
       } else {
         console.log(chalk.yellow('Contact list is empty'));
